@@ -36,16 +36,6 @@ background:#ffd1da;
 margin-left:20px;
 padding:3px 0;
 }
-
-a{
-color:#c62839;
-text-decoration:none;
-font-weight:500;
-}
-
-a:hover{
-text-decoration:underline;
-}
 </style>
 
 </head>
@@ -73,21 +63,22 @@ async function listarPasta(folderId, container){
 try{
 
 const url =
-`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents
-and trashed=false
-&orderBy=name
-&fields=files(id,name,mimeType,webViewLink)
-&key=${API_KEY}`;
+`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&fields=files(id,name,mimeType,webViewLink)&key=${API_KEY}`;
 
 const resposta = await fetch(url);
 
 const dados = await resposta.json();
 
+if(!dados.files){
+container.innerHTML="⚠️ Pasta não pública ou sem acesso.";
+return;
+}
+
 container.innerHTML="";
 
 const lista=document.createElement("ul");
 
-dados.files.forEach(item=>{
+for(const item of dados.files){
 
 const li=document.createElement("li");
 
@@ -120,19 +111,13 @@ pasta.innerHTML="📁 "+item.name;
 
 }else{
 
-if(sublista.style.display==="none"){
+sublista.style.display =
+(sublista.style.display==="none")?"block":"none";
 
-sublista.style.display="block";
-
-pasta.innerHTML="📁 "+item.name;
-
-}else{
-
-sublista.style.display="none";
-
-pasta.innerHTML="📂 "+item.name;
-
-}
+pasta.innerHTML =
+(sublista.style.display==="block")
+?"📁 "+item.name
+:"📂 "+item.name;
 
 }
 
@@ -146,27 +131,29 @@ li.appendChild(sublista);
 li.className="file";
 
 li.innerHTML=
-`📄 <a href="https://drive.google.com/file/d/${item.id}/view" target="_blank">${item.name}</a>`;
+`📄 <a href="${item.webViewLink}" target="_blank">${item.name}</a>`;
 
 }
 
 lista.appendChild(li);
 
-});
+}
 
 container.appendChild(lista);
 
 }catch(e){
 
-container.innerHTML="Erro ao carregar certificados.";
+container.innerHTML="❌ Erro ao acessar Google Drive.";
 
 }
 
 }
 
 
-listarPasta(ROOT_FOLDER,
-document.getElementById("drive-tree"));
+listarPasta(
+ROOT_FOLDER,
+document.getElementById("drive-tree")
+);
 
 </script>
 
