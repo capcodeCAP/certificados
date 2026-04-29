@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<title>Certificados CapCode Junior</title>
+
+<style>
+body{
+font-family:system-ui;
+max-width:900px;
+margin:auto;
+padding:20px;
+background:#f7f9fb;
+}
+
+h1{
+text-align:center;
+color:#a31f34;
+}
+
+.folder{
+cursor:pointer;
+padding:10px;
+background:#ffe6eb;
+margin:6px 0;
+border-radius:8px;
+font-weight:600;
+}
+
+.folder:hover{
+background:#ffd1da;
+}
+
+.file{
+margin-left:20px;
+padding:3px 0;
+}
+
+a{
+color:#c62839;
+text-decoration:none;
+font-weight:500;
+}
+
+a:hover{
+text-decoration:underline;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>📜 Certificados CapCode Junior</h1>
+
+<div id="drive-tree">
+Carregando certificados...
+</div>
+
+
+<script>
+
+const API_KEY =
+"AIzaSyBHcb9dhR3ctvWLADAJTnD3ZxW8IrZ-NXM";
+
+const ROOT_FOLDER =
+"1XONWEtVSlIK6KH5AhTgDwH_JeW_hIiwS";
+
+
+async function listarPasta(folderId, container){
+
+try{
+
+const url =
+`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents
+and trashed=false
+&orderBy=name
+&fields=files(id,name,mimeType,webViewLink)
+&key=${API_KEY}`;
+
+const resposta = await fetch(url);
+
+const dados = await resposta.json();
+
+container.innerHTML="";
+
+const lista=document.createElement("ul");
+
+dados.files.forEach(item=>{
+
+const li=document.createElement("li");
+
+if(item.mimeType==="application/vnd.google-apps.folder"){
+
+const pasta=document.createElement("div");
+
+pasta.className="folder";
+
+pasta.innerHTML="📂 "+item.name;
+
+const sublista=document.createElement("div");
+
+sublista.style.display="none";
+sublista.style.marginLeft="20px";
+
+pasta.onclick=async()=>{
+
+if(sublista.dataset.loaded!=="true"){
+
+sublista.innerHTML="Carregando...";
+
+sublista.style.display="block";
+
+await listarPasta(item.id, sublista);
+
+sublista.dataset.loaded="true";
+
+pasta.innerHTML="📁 "+item.name;
+
+}else{
+
+if(sublista.style.display==="none"){
+
+sublista.style.display="block";
+
+pasta.innerHTML="📁 "+item.name;
+
+}else{
+
+sublista.style.display="none";
+
+pasta.innerHTML="📂 "+item.name;
+
+}
+
+}
+
+};
+
+li.appendChild(pasta);
+li.appendChild(sublista);
+
+}else{
+
+li.className="file";
+
+li.innerHTML=
+`📄 <a href="https://drive.google.com/file/d/${item.id}/view" target="_blank">${item.name}</a>`;
+
+}
+
+lista.appendChild(li);
+
+});
+
+container.appendChild(lista);
+
+}catch(e){
+
+container.innerHTML="Erro ao carregar certificados.";
+
+}
+
+}
+
+
+listarPasta(ROOT_FOLDER,
+document.getElementById("drive-tree"));
+
+</script>
+
+</body>
+
+</html>
