@@ -54,13 +54,29 @@ text-decoration:none;
 text-decoration:underline;
 }
 
+/* rodapé institucional */
+footer{
+margin-top:50px;
+padding:18px;
+text-align:center;
+font-size:0.95rem;
+color:white;
+background:linear-gradient(135deg,#8c1d2d,#c62839);
+border-radius:12px;
+box-shadow:0 6px 20px rgba(0,0,0,0.15);
+}
+
+footer strong{
+letter-spacing:0.5px;
+}
+
 </style>
 
 </head>
 
 <body>
 
-<h1>📜 Certificados CapCode Junior</h1>
+<h1>📜 Certificados CapCode</h1>
 
 <div id="drive-tree">
 Carregando certificados...
@@ -95,7 +111,6 @@ const lista=document.createElement("ul");
 
 for(const item of dados.files){
 
-/* MOSTRAR APENAS PASTAS */
 if(item.mimeType==="application/vnd.google-apps.folder"){
 
 const li=document.createElement("li");
@@ -178,7 +193,6 @@ container.innerHTML="";
 
 for(const item of dados.files){
 
-/* IGNORA NOTEBOOK AUTOMATICAMENTE */
 if(item.name.endsWith(".ipynb")) continue;
 
 const div=document.createElement("div");
@@ -207,6 +221,12 @@ document.getElementById("drive-tree")
 );
 
 </script>
+
+
+<footer>
+<strong>Desenvolvido e mantido pelo projeto capCode</strong><br>
+Sala 213.4 — UFSJ / CAP
+</footer>
 
 </body>
 
