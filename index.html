@@ -3,7 +3,7 @@
 
 <head>
 <meta charset="UTF-8">
-<title>Certificados CapCode Jr.</title>
+<title>Certificados CapCode Junior</title>
 
 <style>
 
@@ -11,227 +11,232 @@ body{
 font-family:system-ui;
 max-width:900px;
 margin:auto;
-padding:20px;
+padding:0;
+background:#f6f7fb;
 }
 
 header{
-margin-bottom:30px;
-padding:15px;
-text-align:center;
-background:#8B0000;
+background:linear-gradient(135deg,#8c1d2d,#c62839);
 color:white;
-border-radius:8px;
+padding:22px;
+text-align:center;
+font-size:1.6rem;
+font-weight:700;
+letter-spacing:1px;
+box-shadow:0 6px 20px rgba(0,0,0,0.15);
+margin-bottom:30px;
 }
 
-h1{
-margin:0;
+.container{
+padding:20px;
+text-align:center;
 }
 
 input{
 padding:10px;
 font-size:16px;
-width:300px;
+width:260px;
 }
 
 button{
-padding:10px 20px;
+padding:10px 18px;
 font-size:16px;
 cursor:pointer;
 margin-left:10px;
 }
 
-#resultado{
-margin-top:25px;
+.resultado{
+margin-top:30px;
+text-align:left;
 }
 
-.certificado{
-background:#f5f5f5;
-padding:15px;
-margin-bottom:12px;
-border-radius:8px;
+.file{
+padding:8px;
+margin-bottom:10px;
+background:#ffe6eb;
+border-left:5px solid #8c1d2d;
+border-radius:6px;
+}
+
+.file a{
+color:#8c1d2d;
+font-weight:600;
+text-decoration:none;
+}
+
+.file a:hover{
+text-decoration:underline;
 }
 
 footer{
-margin-top:40px;
-padding:15px;
+margin-top:50px;
+padding:18px;
 text-align:center;
-background:#8B0000;
+font-size:0.95rem;
 color:white;
-border-radius:8px;
+background:linear-gradient(135deg,#8c1d2d,#c62839);
 }
 
 </style>
 </head>
 
-
 <body>
 
 <header>
-
-<h1>Certificados CapCode Jr.</h1>
-<p>Digite seu CPF, RG ou matrícula (somente números)</p>
-
+📜 Certificados CapCode
 </header>
 
-
-<div style="text-align:center;">
+<div class="container">
 
 <input
 type="text"
 id="identificador"
-placeholder="Ex: 12345678900"
+placeholder="Digite CPF, RG ou matrícula"
 />
 
 <button onclick="buscarCertificados()">
-Buscar certificados
+Buscar
 </button>
+
+<div id="resultado" class="resultado"></div>
 
 </div>
 
 
-<div id="resultado"></div>
-
-
-<footer>
-
-Desenvolvido e mantido pelo projeto CapCode Jr.<br>
-Laboratório 212.2 – Sala 213.4 – UFSJ/CAP
-
-</footer>
-
-
 <script>
 
-const repo = "capcodeCAP/certificados";
+const API_KEY =
+"AIzaSyBHcb9dhR3ctvWLADAJTnD3ZxW8IrZ-NXM";
+
+const ROOT_FOLDER =
+"1XONWEtVSlIK6KH5AhTgDwH_JeW_hIiwS";
 
 
-async function listarConteudo(caminho=""){
+async function listarConteudo(folderId){
 
-    const resposta = await fetch(
-        `https://api.github.com/repos/${repo}/contents/${caminho}`
-    );
+const url =
+`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false
+&fields=files(id,name,mimeType,webViewLink)
+&orderBy=name
+&key=${API_KEY}`;
 
-    return await resposta.json();
+const resposta = await fetch(url);
+
+return await resposta.json();
 
 }
 
 
-async function buscarRecursivo(caminho, identificador, encontrados){
+async function buscarRecursivo(folderId, nomePasta, identificador, encontrados){
 
-    try{
+try{
 
-        const itens = await listarConteudo(caminho);
+const dados = await listarConteudo(folderId);
 
-        for(const item of itens){
+for(const item of dados.files){
 
-            if(item.type === "dir"){
+if(item.mimeType === "application/vnd.google-apps.folder"){
 
-                await buscarRecursivo(
-                    item.path,
-                    identificador,
-                    encontrados
-                );
+await buscarRecursivo(
+item.id,
+nomePasta + "/" + item.name,
+identificador,
+encontrados
+);
 
-            }
+}else{
 
-            else if(
-                item.type === "file" &&
-                item.name.endsWith(".pdf") &&
-                item.name.includes(identificador)
-            ){
+if(
+item.name.toLowerCase().endsWith(".pdf") &&
+item.name.replace(/\D/g,"").includes(identificador)
+){
 
-                encontrados.push({
+encontrados.push({
+nome:item.name,
+pasta:nomePasta,
+link:item.webViewLink
+});
 
-                    nome: item.name,
-                    pasta: item.path.substring(
-                        0,
-                        item.path.lastIndexOf("/")
-                    ),
-                    url: item.download_url
+}
 
-                });
+}
 
-            }
+}
 
-        }
+}catch(e){
 
-    }catch(e){
+console.log("Erro ao acessar:", nomePasta);
 
-        console.log("Erro ao acessar:", caminho);
-
-    }
+}
 
 }
 
 
 async function buscarCertificados(){
 
-    let identificador = document
-        .getElementById("identificador")
-        .value
-        .replace(/\D/g,"");
+let identificador =
+document
+.getElementById("identificador")
+.value
+.replace(/\D/g,"");
+
+if(!identificador){
+
+alert("Digite CPF, RG ou matrícula (somente números).");
+
+return;
+
+}
+
+const resultado =
+document.getElementById("resultado");
+
+resultado.innerHTML="🔎 Buscando certificados...";
+
+let encontrados=[];
+
+await buscarRecursivo(
+ROOT_FOLDER,
+"Certificados",
+identificador,
+encontrados
+);
 
 
-    if(!identificador){
+if(encontrados.length===0){
 
-        alert(
-        "Digite CPF, RG ou matrícula (somente números)."
-        );
+resultado.innerHTML=
+"❌ Nenhum certificado encontrado.";
 
-        return;
+return;
 
-    }
-
-
-    const resultado = document.getElementById("resultado");
-
-    resultado.innerHTML = "🔎 Buscando certificados...";
+}
 
 
-    let encontrados = [];
+resultado.innerHTML="";
 
+encontrados.forEach(cert=>{
 
-    await buscarRecursivo(
-        "",
-        identificador,
-        encontrados
-    );
+resultado.innerHTML+=`
+<div class="file">
+📂 Pasta: <b>${cert.pasta}</b><br>
+📄 <a href="${cert.link}" target="_blank">
+${cert.nome}
+</a>
+</div>
+`;
 
-
-    if(encontrados.length === 0){
-
-        resultado.innerHTML =
-        "❌ Nenhum certificado encontrado para este identificador.";
-
-        return;
-
-    }
-
-
-    resultado.innerHTML = "";
-
-
-    encontrados.forEach(cert => {
-
-        resultado.innerHTML += `
-
-        <div class="certificado">
-
-        📂 Pasta: <b>${cert.pasta}</b><br>
-
-        📄 <a href="${cert.url}" target="_blank">
-        ${cert.nome}
-        </a>
-
-        </div>
-
-        `;
-
-    });
+});
 
 }
 
 </script>
+
+
+<footer>
+<strong>Desenvolvido e mantido pelo projeto capCode</strong><br>
+Laboratório 212.2 — UFSJ / CAP
+</footer>
 
 </body>
 </html>
