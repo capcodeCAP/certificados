@@ -11,17 +11,28 @@ body{
 font-family:system-ui;
 max-width:900px;
 margin:auto;
-padding:20px;
+padding:0;
 background:#f6f7fb;
 }
 
-h1{
+/* cabeçalho institucional */
+header{
+background:linear-gradient(135deg,#8c1d2d,#c62839);
+color:white;
+padding:22px;
 text-align:center;
-color:#8c1d2d;
+font-size:1.6rem;
+font-weight:700;
+letter-spacing:1px;
+box-shadow:0 6px 20px rgba(0,0,0,0.15);
 margin-bottom:30px;
 }
 
-/* estilo pasta */
+/* conteúdo */
+.container{
+padding:20px;
+}
+
 .folder{
 cursor:pointer;
 padding:12px;
@@ -38,7 +49,6 @@ background:#ffd5dc;
 transform:translateX(4px);
 }
 
-/* certificados */
 .file{
 margin-left:25px;
 padding:4px 0;
@@ -62,7 +72,6 @@ text-align:center;
 font-size:0.95rem;
 color:white;
 background:linear-gradient(135deg,#8c1d2d,#c62839);
-border-radius:12px;
 box-shadow:0 6px 20px rgba(0,0,0,0.15);
 }
 
@@ -76,10 +85,16 @@ letter-spacing:0.5px;
 
 <body>
 
-<h1>📜 Certificados CapCode</h1>
+<header>
+📜 Certificados CapCode
+</header>
+
+<div class="container">
 
 <div id="drive-tree">
 Carregando certificados...
+</div>
+
 </div>
 
 
@@ -225,7 +240,7 @@ document.getElementById("drive-tree")
 
 <footer>
 <strong>Desenvolvido e mantido pelo projeto capCode</strong><br>
-Sala 213.4 — UFSJ / CAP
+Laboratório 212.2 — UFSJ / CAP
 </footer>
 
 </body>
