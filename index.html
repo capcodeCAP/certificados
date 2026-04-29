@@ -112,6 +112,19 @@ const ROOT_FOLDER =
 "1XONWEtVSlIK6KH5AhTgDwH_JeW_hIiwS";
 
 
+document
+.getElementById("identificador")
+.addEventListener("keypress", function(e){
+
+if(e.key==="Enter"){
+
+buscarCertificados();
+
+}
+
+});
+
+
 async function listarConteudo(folderId){
 
 const url =
@@ -135,11 +148,11 @@ const dados = await listarConteudo(folderId);
 
 for(const item of dados.files){
 
-if(item.mimeType === "application/vnd.google-apps.folder"){
+if(item.mimeType==="application/vnd.google-apps.folder"){
 
 await buscarRecursivo(
 item.id,
-nomePasta + "/" + item.name,
+nomePasta+"/"+item.name,
 identificador,
 encontrados
 );
@@ -148,7 +161,7 @@ encontrados
 
 if(
 item.name.toLowerCase().endsWith(".pdf") &&
-item.name.replace(/\D/g,"").includes(identificador)
+item.name.replace(".pdf","")===identificador
 ){
 
 encontrados.push({
@@ -188,12 +201,15 @@ return;
 
 }
 
+
 const resultado =
 document.getElementById("resultado");
 
 resultado.innerHTML="🔎 Buscando certificados...";
 
+
 let encontrados=[];
+
 
 await buscarRecursivo(
 ROOT_FOLDER,
@@ -214,6 +230,7 @@ return;
 
 
 resultado.innerHTML="";
+
 
 encontrados.forEach(cert=>{
 
