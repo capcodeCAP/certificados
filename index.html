@@ -86,19 +86,22 @@ background:linear-gradient(135deg,#8c1d2d,#c62839);
 📜 Certificados CapCode
 </header>
 
-<div class="container">
+<div style="text-align:center;">
+
+<p style="margin-bottom:8px; font-weight:500;">
+Digite CPF, RG ou matrícula (sem acentos, pontos ou traços e igual ao nome do certificado)
+</p>
 
 <input
 type="text"
 id="identificador"
-placeholder="Digite CPF, RG ou matrícula (sem acentos, pontos ou traços — deve ser igual ao nome do certificado)"
+style="width:420px; padding:12px; font-size:16px;"
+placeholder="Ex: 12345678900"
 />
 
 <button onclick="buscarCertificados()">
 Buscar
 </button>
-
-<div id="resultado" class="resultado"></div>
 
 </div>
 
