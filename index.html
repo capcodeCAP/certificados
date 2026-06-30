@@ -168,6 +168,10 @@ for(const item of dados.files){
 
 if(item.mimeType==="application/vnd.google-apps.folder"){
 
+  // Ignora a pasta antiga de certificados
+    if(item.name === "Certificados - CAPCode (2019.2 - 2024.1)"){
+        continue;
+    }
 await buscarRecursivo(
 item.id,
 nomePasta+"/"+item.name,
